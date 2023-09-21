@@ -15,12 +15,17 @@ class LoginRepositoryImple extends LoginRepository {
   LoginRepositoryImple({required this.remotedatasources});
 
   @override
-  Future<Either<Failure, LoginAdmin>> userlogin(UserLoginInput input) async {
+  Future<dynamic> userlogin({required UserLoginInput input}) async {
     try {
-      final remoteData = await remotedatasources.userLogin(input: input);
-      return Right(remoteData);
-    } catch (error) {
-      return Left(ServerFailure(message: error.toString()));
-    }
+           final remoteData = await remotedatasources.userLogin(input: input);
+           return remoteData;
+         } catch (error) {
+
+           throw ServerFailure(message: error.toString());
+         }
+       }
   }
-}
+
+
+ // (UserLoginInput input) async {
+ //

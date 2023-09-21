@@ -34,10 +34,11 @@ import '../../../../../Core/Notifications_Services.dart';
 // }
 
 class LoginFrom extends StatefulWidget {
-   LoginFrom({super.key, required this.loginBloc});
+  LoginFrom({super.key, required this.loginBloc});
 
   final LoginBloc loginBloc;
   NotificationServices services = NotificationServices();
+
   @override
   State<LoginFrom> createState() => _LoginFromState();
 }
@@ -51,9 +52,9 @@ class _LoginFromState extends State<LoginFrom>
 
   bool isObscure = true;
   final _key = GlobalKey<FormState>();
-
-  var newtoken="";
-  var ipAddress="";
+  String errorMessage = "";
+  var newtoken = "";
+  var ipAddress = "";
 
   late AnimationController _controller;
   double _offset = 0.0;
@@ -106,17 +107,15 @@ class _LoginFromState extends State<LoginFrom>
     }
   }
 
-
-
   //
 
   @override
   void initState() {
-  widget.services.requestnotificationpermission();
-  widget.services.Devicetoken().then((value){
-    print(value);
-    newtoken= value;
-  });
+    widget.services.requestnotificationpermission();
+    widget.services.Devicetoken().then((value) {
+      print(value);
+      newtoken = value;
+    });
     // getToken();
     fetchPublicIP();
 
@@ -143,19 +142,17 @@ class _LoginFromState extends State<LoginFrom>
     return BlocConsumer<LoginBloc, LoginState>(
       listener: (context, state) {
         if (state is LoginFailureState) {
-          print('on screen: submission failure');
+          errorMessage =
+              state.error.replaceAll("Exception:", "").trim().toString();
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Error"),
+            SnackBar(
+              content: Text(errorMessage),
               backgroundColor: Colors.red,
             ),
           );
         } else if (state is LoginSuccessState) {
-
           context.pushReplacement(USER);
-
-          
         }
       },
       builder: (context, state) {
@@ -168,6 +165,11 @@ class _LoginFromState extends State<LoginFrom>
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 // ignore: prefer_const_literals_to_create_immutables
                 children: [
+                  if (errorMessage.isNotEmpty)
+                    Text(
+                      errorMessage,
+                      style: TextStyle(color: Colors.red),
+                    ),
                   Stack(
                     children: [
                       Image.asset(
@@ -282,7 +284,6 @@ class _LoginFromState extends State<LoginFrom>
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   _LoginButton(
                     input: UserLoginInput(
                       email: emailController.text.toString(),
@@ -291,9 +292,7 @@ class _LoginFromState extends State<LoginFrom>
                       loginIp: ipAddress,
                     ),
                   ),
-
                   const SizedBox(height: 20),
-
                   TextButton(
                     onPressed: () {
                       context.push(FORGET_PASSWORD);
@@ -301,15 +300,12 @@ class _LoginFromState extends State<LoginFrom>
                     child: const Text(txtforgetpassword),
                   ),
                   const SizedBox(height: 20),
-
                   Row(
                     children: [
                       const Text(donthaveaccount),
                       TextButton(
                         onPressed: () {
                           context.push(SIGNUP);
-
-                          
                         },
                         child: const Text(txt_signup),
                       )
@@ -731,7 +727,6 @@ class _LoginFromState extends State<LoginFrom>
 
   Widget _LoginButton({required UserLoginInput input}) {
     return BlocBuilder<LoginBloc, LoginState>(
-      buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.only(top: 20),
@@ -761,37 +756,4 @@ class _LoginFromState extends State<LoginFrom>
   }
 }
 
-// class _LoginButton extends StatelessWidget {
-//   _LoginButton({
-//     Key? key,
-//     required this.input,
-//   }) : super(key: key);
 
-//   UserLoginInput input;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocBuilder<LoginBloc, LoginState>(
-//       buildWhen: (previous, current) => previous != current,
-//       builder: (context, state) {
-//         return Padding(
-//           padding: const EdgeInsets.only(top: 20),
-//           child: CupertinoButton(
-//             disabledColor: Colors.blueAccent.withOpacity(0.6),
-//             color: Colors.blueAccent,
-//             onPressed: state is LoginInitialState
-//                 ? () => context.read<LoginBloc>().add(
-//                       LoginButtonPressed(
-//                         input: input,
-//                       ),
-//                     )
-//                 : null,
-//             child: state is LoginLoadingState
-//                 ? const Center(child: CircularProgressIndicator())
-//                 : const Text('Login'),
-//           ),
-//         );
-//       },
-//     );
-//   }
-// }

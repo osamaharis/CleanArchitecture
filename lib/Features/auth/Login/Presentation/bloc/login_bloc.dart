@@ -1,5 +1,3 @@
-
-
 import 'dart:async';
 import 'dart:convert';
 
@@ -8,133 +6,84 @@ import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:project_cleanarchiteture/Core/CustomError.dart';
 import 'package:project_cleanarchiteture/Core/LocalData.dart';
 import 'package:project_cleanarchiteture/Features/auth/Login/Domain/entities/AdminSignInResponse.dart';
 import 'package:project_cleanarchiteture/Features/auth/Login/Domain/params/UserLoginInput.dart';
 import 'package:project_cleanarchiteture/Features/auth/Login/Domain/repositories/LoginRepository.dart';
+import 'package:project_cleanarchiteture/Utils/GeneralResponse.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../../../Core/failures.dart';
 
 part 'login_event.dart';
 
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> with LocalData {
-  // final userloginUsecase usecase;
   final LoginRepository loginRepo;
+  var token = "";
+  var ipAddress = "";
 
   LoginBloc({required this.loginRepo}) : super(LoginInitialState()) {
     on<LoginButtonPressed>((event, emit) async {
-      print("LoginButtonPressed event received");
-
-      emit(LoginLoadingState());
-      print("Emitted Login Loading State");
+      emit(LoginInitialState());
 
       try {
-        final response = await loginRepo.userlogin(event.input);
+        await loginRepo.userlogin(input: event.input).then((value) {
+          List<CustomError> error = List<CustomError>.empty(growable: true);
+          if (value["error"] != null) {
+            List<Map<String, dynamic>>.from(value["error"]).forEach((element) {
+              error.add((CustomError.fromJson(
+                  json.decode(json.encode(element)) as Map<String, dynamic>)));
+            });
+          }
 
-        print("Response: $response");
-
-        if (response.isLeft()) {
-          final failure = response.fold((failure) => failure, (_) => null);
-          print("Login failed: $failure");
-          emit(LoginFailureState(error: failure.toString()));
-        } else {
-          print("Login successful");
-
-          emit(
-            LoginSuccessState(
-              message: "Logged In Successfully",
-              loginResponse: (response as Right).value,
-            ),
+          var data = GeneralResponse<LoginAdmin>(
+            error.isNotEmpty ? error : null,
+            (value["loginUser"] != null)
+                ? (LoginAdmin.fromJson(value["loginUser"]))
+                : null,
           );
-          setUserinfo(jsonEncode(response));
-         // _saveLoginDataToSharedPreferences(jsonEncode(response));
+          if (data.data != null) {
+            emit(LoginSuccessState(loginResponse: data.data));
+            setUserinfo(jsonEncode(data.data?.toJson()));
+          } else {
+            emit(LoginFailureState(error: "No data Found"));
+          }
+        }).catchError(( err) {
 
-          print("Login successful 2");
-        }
+          emit(LoginFailureState(error:(err as  ServerFailure).message.toString()));
+        });
       } catch (e) {
-        print("Login failed: $e");
         emit(LoginFailureState(error: e.toString()));
       }
     });
-  }
 
-//   _onloginrequest(LoginButtonPressed event, Emitter<LoginState> emit) async {
-//     emit(LoginLoading());
-//
-//     final result = await usecase.execute(event.input);
-// emit(result)
-  // @override
-  // Stream<LoginState> mapEventToState(LoginButtonPressed btnevent) async* {
-  //   if (btnevent is LoginButtonPressed) {
-  //     yield LoginLoadingState();
-  //     try {
-  //       final response = await loginrepo.Userlogin(UserLoginInput(
-  //           email: btnevent.input.email,
-  //           password: btnevent.input.password,
-  //           deviceId: btnevent.input.deviceId,
-  //           loginIp: btnevent.input.loginIp));
-  //       yield LoginSuccessState(message: "Logged In Successfully");
-  //     } catch (e) {}
-  //   }
-  // }
-  //
-  //
-  // @override
-  // LoginState get initialState => LoginInitialState();
-  // @override
-  // Stream<LoginState> mapEventToState(
-  //   LoginState currentState,
-  //   LoginEvent event,
-  // ) async* {
-  //   if (event is LoginButtonPressed) {
-  //     yield LoginLoadingState();
-  //     try {
-  //       final response = await loginRepo.userlogin(event.input);
-  //       yield LoginSuccessState(message: "Logged In Successfully");
-  //     } catch (e) {
-  //       yield LoginFailureState(error: e.toString());
-  //     }
-  //   }
-  // }
+    @override
+    void onTransition(Transition<LoginEvent, LoginState> transition) {
+      super.onTransition(transition);
+      debugPrint(transition.toString());
+    }
 
-  // Future<void> _saveLoginDataToSharedPreferences(String loginData) async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   prefs.setString('loginData', loginData);
-  // }
-  //
-  // // var savedLoginData;
-  // Future<void> _getSavedLoginData() async {
-  //   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   final loginData = prefs.getString('loginData');
-  //   // setState(() {
-  //   //   savedLoginData = loginData;
-  //   // });
-  // }
+    @override
+    void onChange(Change<LoginState> change) {
+      super.onChange(change);
+      debugPrint(change.toString());
+      debugPrint(change.currentState.toString());
+      debugPrint(change.nextState.toString());
+    }
 
-  @override
-  void onTransition(Transition<LoginEvent, LoginState> transition) {
-    super.onTransition(transition);
-    debugPrint(transition.toString());
-  }
+    @override
+    void onError(Object error, StackTrace stackTrace) {
+      super.onError(error, stackTrace);
+      debugPrint(error.toString());
+    }
 
-  @override
-  void onChange(Change<LoginState> change) {
-    super.onChange(change);
-    debugPrint(change.toString());
-    debugPrint(change.currentState.toString());
-    debugPrint(change.nextState.toString());
-  }
-
-  @override
-  void onError(Object error, StackTrace stackTrace) {
-    super.onError(error, stackTrace);
-    debugPrint(error.toString());
-  }
-
-  @override
-  void onEvent(LoginEvent event) {
-    super.onEvent(event);
-    debugPrint(event.toString());
+    @override
+    void onEvent(LoginEvent event) {
+      super.onEvent(event);
+      debugPrint(event.toString());
+    }
   }
 }

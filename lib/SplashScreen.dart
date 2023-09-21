@@ -4,31 +4,31 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:project_cleanarchiteture/Core/LocalData.dart';
+import 'package:project_cleanarchiteture/Features/auth/Login/Domain/entities/AdminSignInResponse.dart';
 import 'package:project_cleanarchiteture/Utils/Extensions.dart';
 import 'package:project_cleanarchiteture/Utils/Routing.dart';
 
-class SplashView extends StatefulWidget {
-   SplashView({Key? key}) : super(key: key);
-var storage= LocalData();
+class SplashView extends StatefulWidget  {
+  SplashView({Key? key}) : super(key: key);
+  var storage = LocalData();
+
   @override
   State<SplashView> createState() => _SplashViewState();
 }
 
 class _SplashViewState extends State<SplashView>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin ,LocalData{
   @override
   void initState() {
     super.initState();
     loadDataAndNavigate();
   }
 
-  void loadDataAndNavigate()  {
-    Future.delayed( Duration(milliseconds: 3));
-    if(widget.storage.getUserinfo(USER_INFO) == null)
-      {
-    context.go(SIGNIN);
-      }
-    else {
+  void loadDataAndNavigate() {
+    Future.delayed(Duration(seconds: 3));
+    if (getUserinfo(USER_INFO)  == null) {
+      context.go(SIGNIN);
+    } else {
       context.go(USER);
     }
     //context.go(USER);
@@ -36,7 +36,7 @@ class _SplashViewState extends State<SplashView>
 
   @override
   Widget build(BuildContext context) {
-    // GoToMain();
+   // loadDataAndNavigate();
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -58,9 +58,8 @@ class _SplashViewState extends State<SplashView>
                 ),
               ),
               onPressed: () {
-                context.go(SIGNIN);
-
-                // loadDataAndNavigate();
+                // context.go(SIGNIN);
+                  loadDataAndNavigate();
               },
               child: const Text("Skip"),
             ),

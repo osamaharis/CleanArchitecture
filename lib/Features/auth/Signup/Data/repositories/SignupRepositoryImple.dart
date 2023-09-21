@@ -14,18 +14,13 @@ class SignupRepositoryImple extends SignupRepository {
   SignupRepositoryImple({required this.remotedatasources});
 
   @override
-  Future<Either<Failure, String>> userSignup(UserSignupInput input) async {
+   Future<dynamic>UserSignup(UserSignupInput input) async {
     try {
       final remoteData = await remotedatasources.userSignup(input: input);
 
-      // final remoteData =
-      //     await serviceLocator<SignupRemoteDatasource>().userSignup(input: input);
-
-      print("Repo Result: $remoteData");
-
-      return Right(remoteData);
+      return remoteData;
     } catch (error) {
-      return Left(ServerFailure(message: error.toString()));
+     throw ServerFailure(message: error.toString());
     }
   }
 }

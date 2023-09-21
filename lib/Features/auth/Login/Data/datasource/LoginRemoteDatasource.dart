@@ -61,8 +61,7 @@ class LoginRemoteDatasourceImpl extends LoginRemoteDatasource {
                 jsonDecode(result.exception!.graphqlErrors.first.message))
             .message);
       } else {
-        final data = result.data!["loginUser"];
-        return LoginAdmin.fromJson(data);
+        return result.data;
         //LoginAdmin.fromJson(jsonDecode(data));
       }
     } catch (error) {

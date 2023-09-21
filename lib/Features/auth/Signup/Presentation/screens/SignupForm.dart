@@ -38,7 +38,7 @@ class _SignupFromState extends State<SignupFrom>
 
   late String newtoken;
   var ipAddress;
-
+  String errorMessage = "";
   late AnimationController _controller;
   double _offset = 0.0;
   double initailHeight = 10.0;
@@ -150,25 +150,16 @@ class _SignupFromState extends State<SignupFrom>
     return BlocConsumer<SignupBloc, SignupState>(
       listener: (context, state) {
         if (state is SignupFailureState) {
-          print('on screen: submission failure');
-
+          errorMessage =
+              state.error;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Error"),
+             SnackBar(
+              content: Text(errorMessage),
               backgroundColor: Colors.red,
             ),
           );
         } else if (state is SignupSuccessState) {
-          print('on screen: success');
-
           context.pushReplacement(SIGNIN);
-
-          // Navigator.pushReplacement(
-          //   context,
-          //   MaterialPageRoute(
-          //     builder: (context) => SignInView(),
-          //   ),
-          // );
         }
       },
       builder: (context, state) {
@@ -181,6 +172,7 @@ class _SignupFromState extends State<SignupFrom>
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 // ignore: prefer_const_literals_to_create_immutables
                 children: [
+
                   Stack(
                     children: [
                       Image.asset(
@@ -449,18 +441,12 @@ class _SignupFromState extends State<SignupFrom>
 
   Widget _SignupButton({required UserSignupInput input}) {
     return BlocBuilder<SignupBloc, SignupState>(
-      buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         return Padding(
           padding: const EdgeInsets.only(top: 20),
           child: ElevatedButton(
-            // disabledColor: Colors.blueAccent.withOpacity(0.6),
-            // color: Colors.blueAccent,
             onPressed: () {
               if (_key.currentState!.validate()) {
-                // state is SignupInitialState
-                // ?
-                // () =>
                 context.read<SignupBloc>().add(
                       SignupButtonPressed(
                         input: input,

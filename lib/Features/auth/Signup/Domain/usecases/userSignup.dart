@@ -8,7 +8,7 @@ class userSignupUsecase {
   final SignupRepository repository;
 
   userSignupUsecase({required this.repository});
-  Future<Either<Failure, String>> execute(UserSignupInput userSignup) async {
-    return repository.userSignup(userSignup);
+execute(UserSignupInput userSignup) async {
+    return repository.UserSignup(userSignup);
   }
 }

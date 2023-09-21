@@ -46,7 +46,7 @@ class SignupRemoteDatasourceImpl extends SignupRemoteDatasource {
         ).message);
       } else {
         // final data = result.data!["createUser"];
-        return result.data.toString();
+        return result.data;
       }
     } catch (error) {
       throw Exception(error.toString());

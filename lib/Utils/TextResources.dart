@@ -8,6 +8,7 @@ const txt_Submit = "Submit";
 const txt_signup = "Register Now";
 const username = "John Doe";
 const role = "Admin";
+const txtuser= "User";
 const txtpending = "Pending";
 const txtcompleted = "Approved";
 const txtxsuccesstask="Total success Tasks";

@@ -3,10 +3,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:project_cleanarchiteture/Features/CRUD/bloc/user_bloc.dart';
-import 'package:project_cleanarchiteture/Features/CRUD/repo/roles_lov_repository.dart';
-import 'package:project_cleanarchiteture/Features/CRUD/repo/users_lov_repository.dart';
-import 'package:project_cleanarchiteture/Features/Users/presentation/userscreens/user.dart';
+import 'package:project_cleanarchiteture/Features/Role/Data/datasource/RoleDataSource.dart';
+import 'package:project_cleanarchiteture/Features/Role/Data/repositories/RoleRepositoryImpl.dart';
+import 'package:project_cleanarchiteture/Features/Role/Presentation/bloc/rolebloc_bloc.dart';
 import 'package:project_cleanarchiteture/Features/auth/CreateNewPassword/data/datasources/CreateNewPasswordRemoteDatasource.dart';
 import 'package:project_cleanarchiteture/Features/auth/CreateNewPassword/data/repositories/CreateNewPasswordRepositoryImple.dart';
 import 'package:project_cleanarchiteture/Features/auth/CreateNewPassword/presentation/bloc/create_new_password_bloc.dart';
@@ -24,6 +23,9 @@ import 'package:project_cleanarchiteture/Features/auth/Signup/Data/repositories/
 import 'package:project_cleanarchiteture/Features/auth/Signup/Presentation/bloc/signup_bloc.dart';
 import 'package:project_cleanarchiteture/Utils/Routing.dart';
 import 'package:get_it/get_it.dart';
+import 'Features/Users/data/datasources/UserDataSource.dart';
+import 'Features/Users/data/repositories/UserRepositoryImplementation.dart';
+import 'Features/Users/presentation/bloc/userbloc_bloc.dart';
 import 'Theme/CustomTheme.dart';
 import 'injection.dart' as di;
 
@@ -48,8 +50,7 @@ class SimpleBlocDelegate extends FlowDelegate {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(Firebasebackground);
-
+  // FirebaseMessaging.onBackgroundMessage(Firebasebackground);
 
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
@@ -61,11 +62,9 @@ void main() async {
   runApp(Login());
 }
 
-Future<void> Firebasebackground(RemoteMessage message) async {
-
-    await  Firebase.initializeApp();
-}
-
+// Future<void> Firebasebackground(RemoteMessage message) async {
+//   await Firebase.initializeApp();
+// }
 
 class Login extends StatelessWidget {
   Login({super.key});
@@ -82,6 +81,15 @@ class Login extends StatelessWidget {
             ),
           ),
         ),
+        BlocProvider(
+            create: (context) => UserblocBloc(
+                repository: UserRepositoryImplementation(
+                    userDataSource: UserDataSourceImplementation()))),
+        BlocProvider(
+            create: (context) => RoleblocBloc(
+                repository:
+                    RoleRepositoryImpl(dataSource: RoleDataSourceImple()))),
+
         BlocProvider(
           create: (context) => SignupBloc(
             signupRepo: SignupRepositoryImple(
@@ -123,15 +131,15 @@ class Login extends StatelessWidget {
         routerConfig: routes,
         title: 'Authentication',
         debugShowCheckedModeBanner: false,
-        theme:CustomTheme().main_theme.copyWith(
-          radioTheme: Theme.of(context).radioTheme,
-          dividerColor: Colors.transparent,
-          checkboxTheme: Theme.of(context).checkboxTheme.copyWith(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              splashRadius: 0),
-        ),
+        theme: CustomTheme().main_theme.copyWith(
+              radioTheme: Theme.of(context).radioTheme,
+              dividerColor: Colors.transparent,
+              checkboxTheme: Theme.of(context).checkboxTheme.copyWith(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  splashRadius: 0),
+            ),
         darkTheme: CustomTheme().main_theme,
         themeMode: ThemeMode.system,
         // home: SignInView(),
@@ -139,42 +147,5 @@ class Login extends StatelessWidget {
     );
   }
 }
-
-// class App extends StatefulWidget {
-//   App({Key? key, required this.loginRepository}) : super(key: key);
-//   final LoginRepository loginRepository;
-//   @override
-//   State<App> createState() => _AppState();
-// }
-
-// class _AppState extends State<App> {
-//   LoginRepository get loginRepository => widget.loginRepository;
-//   @override
-//   Widget build(BuildContext context) {
-//     return BlocProvider<AuthenticationBloc>(
-//       bloc: authenticationBloc,
-//       create: (BuildContext context) {  },
-//       child: MaterialApp(
-//         home: BlocBuilder<AuthenticationEvent, AuthenticationState>(
-//           bloc: authenticationBloc,
-//           builder: (BuildContext context, AuthenticationState state) {
-//             if (state is AuthenticationUninitialized) {
-//               return SplashPage();
-//             }
-//             if (state is AuthenticationAuthenticated) {
-//               return HomePage();
-//             }
-//             if (state is AuthenticationUnauthenticated) {
-//               return LoginPage(loginRepository: loginRepository);
-//             }
-//             if (state is AuthenticationLoading) {
-//               return LoadingIndicator();
-//             }
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 

@@ -10,7 +10,7 @@ class userloginUsecase {
   final LoginRepository repository;
 
   userloginUsecase({required this.repository});
-  Future<Either<Failure, LoginAdmin>> execute(UserLoginInput userLogin) async {
-    return repository.userlogin(userLogin);
+ execute(UserLoginInput input) async {
+    return repository.userlogin(input: input);
   }
 }

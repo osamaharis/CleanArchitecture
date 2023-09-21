@@ -28,6 +28,8 @@ dependencies:
   google_fonts: ^4.0.2
   graphql_flutter: any
   graphql_codegen: any
+  cached_network_image: any
+  shimmer: any
   timeago: any
 
   internet_connection_checker: ^1.0.0+1

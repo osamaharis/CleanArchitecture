@@ -11,7 +11,22 @@ class LoadingUserLov extends  UserblocEvent
   List<Object?> get props => [];
 
 }
-class LoadUserLovEvent extends UserblocEvent {
+class LoadedUserLovEvent extends UserblocEvent {
+final String token;
+const LoadedUserLovEvent({required this.token});
+  @override
+  List<Object?> get props => [];
+}
+
+// @immutable
+// abstract class UserblocIDEvent extends Equatable {
+//   const UserblocIDEvent();
+// }
+class LoadedUserbyIdEvent extends UserblocEvent
+{
+  final token;
+  final id;
+  LoadedUserbyIdEvent({required this.id,required this.token});
   @override
   List<Object?> get props => [];
 }

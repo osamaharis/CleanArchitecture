@@ -5,5 +5,5 @@ import 'package:project_cleanarchiteture/Features/auth/Login/Domain/entities/Adm
 import 'package:project_cleanarchiteture/Features/auth/Login/Domain/params/UserLoginInput.dart';
 
 abstract class LoginRepository extends BaseRepository {
-  Future<Either<Failure, LoginAdmin>> userlogin(UserLoginInput userLogin);
+  userlogin({required UserLoginInput input});
 }

@@ -13,7 +13,17 @@ class UserRepositoryImplementation extends UserRepository {
       final remote = await userDataSource.UserLov(token: token);
       return remote;
     } catch (e) {
-      ServerFailure(message: e.toString());
+      throw ServerFailure(message: e.toString());
+    }
+  }
+
+  @override
+  UserbyId({required String token, required int id}) async {
+    try {
+      final userbyid = await userDataSource.UserById(token: token, id: id);
+      return userbyid;
+    } catch (e) {
+      throw ServerFailure(message: e.toString());
     }
   }
 }
