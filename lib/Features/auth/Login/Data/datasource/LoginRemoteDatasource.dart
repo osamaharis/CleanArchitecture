@@ -82,7 +82,6 @@ class LoginRemoteDatasourceImpl extends LoginRemoteDatasource {
             .message);
       } else {
         return result.data;
-
         //LoginAdmin.fromJson(jsonDecode(data));
       }
     } catch (error) {

@@ -1,4 +1,3 @@
-import 'package:project_cleanarchiteture/Features/auth/Login/Domain/entities/AdminSignInResponse.dart';
 import 'package:project_cleanarchiteture/Utils/Extensions.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

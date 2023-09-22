@@ -14,7 +14,6 @@ import 'package:project_cleanarchiteture/WidgetComponents/CutomButton.dart';
 
 class SignupFrom extends StatefulWidget {
   const SignupFrom({super.key, required this.signupBloc});
-
   final SignupBloc signupBloc;
 
   @override

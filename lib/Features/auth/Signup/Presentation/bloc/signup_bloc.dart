@@ -31,7 +31,6 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
                   json.decode(json.encode(element)) as Map<String, dynamic>)));
             });
           }
-
           var data = GeneralResponse<GMessage>(
             error.isNotEmpty ? error : null,
             (value["createUser"] != null)
